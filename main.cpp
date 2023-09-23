@@ -117,13 +117,13 @@ int main()
 
 		// Entrada
 		read_in();
-		cout << L << endl;
+
 		// Modelo
 		IloModel TOP(env, "Team OP");
 
 		// Inicializando o objeto cplex
 		IloCplex cplex(TOP);
-
+		cplex.setOut(env.getNullStream());
 
 		// Variável de decisão
 		IloIntVarArray y(env, N + 1, 0, 1);
@@ -146,9 +146,27 @@ int main()
 					int a = ak[u][v];
 					somatorio += x[a][k];
 				}
+				
 			}
 			TOP.add(somatorio == y[v]);
 		}
+
+		//Restricao add
+		for(int k = 0; k < m; k++)
+			for(int v = 1; v <= N; v++) {
+				IloExpr sum1(env), sum2(env);
+				for(int u : adjm[v]) {
+					int a = ak[u][v];
+					sum1 += x[a][k];
+				}
+
+				for(int u : adjp[v]) {
+					int a = ak[v][u];
+					sum2 += x[a][k];
+				}
+
+				//TOP.add(sum1 == sum2);
+			}
 
 		// Restrição (4)
 		for(int a = 0; a < M; a++) {
@@ -188,37 +206,35 @@ int main()
 		}
 
 		//A 8 e 9 ficam setadas na definicao das variaveis.
+
+		//Callback
 		IloNum tol = cplex.getParam(IloCplex::EpInt);
-		IloCplex::Callback sec = cplex.use( SubtourEliminationCallback(env, y, x, tol));
+		IloCplex::Callback sec = cplex.use(SubtourEliminationCallback(env, y, x, tol));
 
 		// Rodando o algoritmo
 		if ( cplex.solve() )
 			cerr << "Premio ótimo: " << cplex.getObjValue() << endl;
 
-		// Obtendo a solução
+		// Imprimindo a sol:
+		//cout << "m " << m << endl;	
 		//for(int k = 0; k < m; k++) {
-		//	vector<int> prox(N + 2, -1);
 		//	for(int i = 0; i <= N; i++) {
 		//		for(int j = 1; j <= N + 1; j++) {
 		//			int a = ak[i][j];
-		//			if(a != -1) {
+		//			if(a != -1) { 
 		//				IloNum in = cplex.getValue(x[a][k]);
-		//				if(in >= 1.0 - tol) prox[i] = j;
+		//				if(in >= 1.0 - tol) cout << i << " " << j << endl;
 		//			}
-		//			else cout << 0 << " ";
-
 		//		}
 		//	}
-		//	cout << "Carro " << k + 1 << ": ";
-		//	int curr = 0, score = 0;
-		//	float tempo = 0;
-		//	while(curr != N + 1) {
-		//		cout << curr << " ";
-		//		curr = prox[curr];
-		//	}
-		//	cout << N + 1 << endl;
 		//}
-		//Imprimindo a solução
+
+		//cout << endl << endl;
+		//for(int v = 1; v <= N; v++) {
+		//	IloNum in = cplex.getValue(y[v]);
+		//	if(in >= 1.0 - tol) cout << v << " ";
+		//}
+		//cout << endl;
 
 }
 	catch (const IloException& e)

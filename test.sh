@@ -4,5 +4,6 @@ make
 echo "" > out
 for entry in ./instances/*.txt
 do
-	./run < $entry >> out
+	time ./run < $entry >> out
+	echo "\n" >> out
 done
