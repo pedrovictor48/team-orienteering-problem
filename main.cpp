@@ -196,29 +196,28 @@ int main()
 			cerr << "Premio ótimo: " << cplex.getObjValue() << endl;
 
 		// Obtendo a solução
-		for(int k = 0; k < m; k++) {
+		//for(int k = 0; k < m; k++) {
+		//	vector<int> prox(N + 2, -1);
+		//	for(int i = 0; i <= N; i++) {
+		//		for(int j = 1; j <= N + 1; j++) {
+		//			int a = ak[i][j];
+		//			if(a != -1) {
+		//				IloNum in = cplex.getValue(x[a][k]);
+		//				if(in >= 1.0 - tol) prox[i] = j;
+		//			}
+		//			else cout << 0 << " ";
 
-			vector<int> prox(N + 2, -1);
-			for(int i = 0; i <= N; i++) {
-				for(int j = 1; j <= N + 1; j++) {
-					int a = ak[i][j];
-					if(a != -1) {
-						IloNum in = cplex.getValue(x[a][k]);
-						if(in >= 1.0 - tol) prox[i] = j;
-					}
-					else cout << 0 << " ";
-
-				}
-			}
-			cout << "Carro " << k + 1 << ": ";
-			int curr = 0, score = 0;
-			float tempo = 0;
-			while(curr != N + 1) {
-				cout << curr << " ";
-				curr = prox[curr];
-			}
-			cout << N + 1 << endl;
-		}
+		//		}
+		//	}
+		//	cout << "Carro " << k + 1 << ": ";
+		//	int curr = 0, score = 0;
+		//	float tempo = 0;
+		//	while(curr != N + 1) {
+		//		cout << curr << " ";
+		//		curr = prox[curr];
+		//	}
+		//	cout << N + 1 << endl;
+		//}
 		//Imprimindo a solução
 
 }
