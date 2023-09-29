@@ -4,6 +4,8 @@
 
 using namespace std;
 
+string in_path;
+
 vector<vector<int>> adjm, adjp, ak;
 int N, M, m;
 float L;
@@ -16,6 +18,8 @@ float eucl_dist(int u, int v) {
 }
 
 void read_in() {
+	ifstream cin(in_path);
+
 	string lixo;
 	cin >> lixo >> N;
 	cin >> lixo >> m;
@@ -48,6 +52,7 @@ void read_in() {
 		}
 	}
 	M = ac;
+	cout << M << endl;
 }
 
 void dfs(int curr, vector<vector<int>>& m, vector<int>& vis, vector<int>& path) {
@@ -108,8 +113,11 @@ ILOLAZYCONSTRAINTCALLBACK3(SubtourEliminationCallback, IloIntVarArray, y, IloArr
 }
 
 
-int main()
+int main(int argc, char* argv[])
 {
+	in_path = argv[1];
+	in_path = "./" + in_path;
+	cout << in_path << endl;
 	// Criando o ambiente
 	IloEnv env;
 	try
@@ -165,7 +173,7 @@ int main()
 					sum2 += x[a][k];
 				}
 
-				//TOP.add(sum1 == sum2);
+				TOP.add(sum1 == sum2);
 			}
 
 		// Restrição (4)
@@ -212,22 +220,26 @@ int main()
 		IloCplex::Callback sec = cplex.use(SubtourEliminationCallback(env, y, x, tol));
 
 		// Rodando o algoritmo
-		if ( cplex.solve() )
+		if ( cplex.solve() ) {
 			cerr << "Premio ótimo: " << cplex.getObjValue() << endl;
+			fstream out;
+			out.open("out", fstream::app);
+			out << in_path << ": " << cplex.getObjValue() << endl;
+		}
 
-		// Imprimindo a sol:
-		//cout << "m " << m << endl;	
-		//for(int k = 0; k < m; k++) {
-		//	for(int i = 0; i <= N; i++) {
-		//		for(int j = 1; j <= N + 1; j++) {
-		//			int a = ak[i][j];
-		//			if(a != -1) { 
-		//				IloNum in = cplex.getValue(x[a][k]);
-		//				if(in >= 1.0 - tol) cout << i << " " << j << endl;
-		//			}
-		//		}
-		//	}
-		//}
+		 //Imprimindo a sol:
+		cout << "m " << m << endl;	
+		for(int k = 0; k < m; k++) {
+			for(int i = 0; i <= N; i++) {
+				for(int j = 1; j <= N + 1; j++) {
+					int a = ak[i][j];
+					if(a != -1) { 
+						IloNum in = cplex.getValue(x[a][k]);
+						if(in >= 1.0 - tol) cout << i << " " << j << " " << l[a] << endl;
+					}
+				}
+			}
+		}
 
 		//cout << endl << endl;
 		//for(int v = 1; v <= N; v++) {

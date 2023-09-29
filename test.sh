@@ -1,9 +1,7 @@
-#!bin/zsh
+#!/bin/bash
 
-make
-echo "" > out
+rm ./out
 for entry in ./instances/*.txt
 do
-	time ./run < $entry >> out
-	echo "\n" >> out
+	./run $entry
 done
